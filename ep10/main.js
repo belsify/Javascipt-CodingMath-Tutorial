@@ -5,23 +5,26 @@ window.onload = function(){
         width = canvas.width = window.innerWidth,
         ship = particle.create(width/ 2, height/2, 0, 0),
         thrust = vector.create(0, 0),
-        angle = 0;
+        angle = 0,
+        turningLeft = false,
+        turningRight = false,
+        thrusting = false;
 
     update();
 
     document.body.addEventListener("keydown", function(event){
         switch(event.keyCode){
             case 38: //up
-                thrust.setY(-0.1);
+                thrusting = true;
                 break;
-            case 40: //down
-                thrust.setY(0.1);
-                break;
+            // case 40: //down
+            //     thrust.setY(0.1);
+            //     break;
             case 37: //left
-                thrust.setX(-0.1);
+                turningLeft = true;
                 break;
             case 39: //right
-                thrust.setX(0.1);
+                turningRight = true;
                 break;
             default:
             break;
@@ -31,16 +34,16 @@ window.onload = function(){
     document.body.addEventListener("keyup", function(event){
         switch(event.keyCode){
             case 38: //up
-                thrust.setY(0);
+                thrusting = false;
                 break;
-            case 40: //down
-                thrust.setY(0);
-                break;
+            // case 40: //down
+            //     thrust.setY(0.1);
+            //     break;
             case 37: //left
-                thrust.setX(0);
+                turningLeft = false;
                 break;
             case 39: //right
-                thrust.setX(0);
+                turningRight = false;
                 break;
             default:
             break;
@@ -49,6 +52,21 @@ window.onload = function(){
 
     function update(){
         context.clearRect(0, 0, width, height);
+
+        if(turningLeft){
+            angle -= 0.05;
+        }
+        if(turningRight){
+            angle += 0.05
+        }
+
+        thrust.setAngle(angle);
+
+        if(thrusting){
+            thrust.setLength(0.1);
+        }else{
+            thrust.setLength(0);
+        }
 
         //animation here
         ship.accelerate(thrust);
@@ -63,6 +81,10 @@ window.onload = function(){
         context.lineTo(-10, -7);
         context.lineTo(-10, 7);
         context.lineTo(10, 0);
+        if(thrusting){
+            context.moveTo(-10, 0);
+            context.lineTo(-18, 0);
+        }
         context.stroke();
         context.restore();
 
